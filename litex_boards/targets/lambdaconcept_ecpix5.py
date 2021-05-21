@@ -79,7 +79,7 @@ class _CRG(Module):
 
 class BaseSoC(SoCCore):
     def __init__(self, device="85F", sys_clk_freq=int(75e6), with_ethernet=False,
-                 with_etherbone=False, with_led_chaser=True, **kwargs):
+                 with_etherbone=False, with_led_chaser=True, eth_ip="192.168.1.50", **kwargs):
         platform = ecpix5.Platform(device=device, toolchain="trellis")
 
         # SoCCore ----------------------------------------------------------------------------------
@@ -113,7 +113,7 @@ class BaseSoC(SoCCore):
             if with_ethernet:
                 self.add_ethernet(phy=self.ethphy)
             if with_etherbone:
-                self.add_etherbone(phy=self.ethphy)
+                self.add_etherbone(phy=self.ethphy, ip_address=eth_ip)
 
         # Leds -------------------------------------------------------------------------------------
         if with_led_chaser:
@@ -139,6 +139,8 @@ def main():
     ethopts = parser.add_mutually_exclusive_group()
     ethopts.add_argument("--with-ethernet",  action="store_true", help="Enable Ethernet support")
     ethopts.add_argument("--with-etherbone", action="store_true", help="Enable Etherbone support")
+    parser.add_argument("--eth-ip",          default="192.168.1.50", type=str, help="Ethernet/Etherbone IP address")
+
 
     builder_args(parser)
     soc_core_args(parser)
@@ -150,6 +152,7 @@ def main():
         sys_clk_freq   = int(float(args.sys_clk_freq)),
         with_ethernet  = args.with_ethernet,
         with_etherbone = args.with_etherbone,
+        eth_ip         = args.eth_ip,
         **soc_core_argdict(args)
     )
     if args.with_sdcard:
