@@ -78,9 +78,10 @@ class _CRG(Module):
 # BaseSoC ------------------------------------------------------------------------------------------
 
 class BaseSoC(SoCCore):
-    def __init__(self, device="85F", sys_clk_freq=int(75e6), with_ethernet=False,
+    def __init__(self, platform=None, device="85F", sys_clk_freq=int(75e6), with_ethernet=False,
                  with_etherbone=False, with_led_chaser=True, eth_ip="192.168.1.50", **kwargs):
-        platform = ecpix5.Platform(device=device, toolchain="trellis")
+        if platform is None:
+            platform = ecpix5.Platform(device=device, toolchain="trellis")
 
         # SoCCore ----------------------------------------------------------------------------------
         SoCCore.__init__(self, platform, sys_clk_freq,
