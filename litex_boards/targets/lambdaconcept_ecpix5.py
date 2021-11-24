@@ -119,13 +119,17 @@ class BaseSoC(SoCCore):
         # Leds -------------------------------------------------------------------------------------
         if with_led_chaser:
             leds_pads = []
-            for i in range(4):
-                rgb_led_pads = platform.request("rgb_led", i)
-                self.comb += [getattr(rgb_led_pads, n).eq(1) for n in "gb"] # Disable Green/Blue Leds.
-                leds_pads += [getattr(rgb_led_pads, n) for n in "r"]
-            self.submodules.leds = LedChaser(
-                pads         = Cat(leds_pads),
-                sys_clk_freq = sys_clk_freq)
+            for i in range(1, 3):
+                rgb_led_pads = platform.request("rgb_led", i, loose=True)
+                if rgb_led_pads != None:
+                    self.comb += [getattr(rgb_led_pads, n).eq(1) for n in "rgb"] # Disable Leds.
+
+            rgb_led_pads = platform.request("rgb_led", 3, loose=True)
+            if rgb_led_pads != None:
+                leds_pads += [getattr(rgb_led_pads, n) for n in "rgb"]
+                self.submodules.leds = LedChaser(
+                    pads         = Cat(leds_pads),
+                    sys_clk_freq = sys_clk_freq)
 
 # Build --------------------------------------------------------------------------------------------
 
